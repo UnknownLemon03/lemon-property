@@ -33,6 +33,7 @@
 
 # vercel
 **/.vercel/
+**/dist
 
 # typescript
 **/*.tsbuildinfo
