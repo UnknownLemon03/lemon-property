@@ -11,8 +11,18 @@ export default function NavBarMain() {
     setLogin(isLogin());
   }, []);
   let link = [
-    (login ?  {name:"Dashboard",link:"/dashboard"} : {name:"Login/SignUp",link:"/auth"} )
+   
   ]
+  if(login){
+    link.push(
+      {name:"Dashboard",link:"/dashboard"},
+      {name:"Logout",link:"#"},
+    )
+  }else{
+    link.push(
+      {name:"Login/SignUp",link:"/auth"} 
+    )
+  }
   return (
     <>
       <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">

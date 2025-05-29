@@ -1,21 +1,34 @@
 import { Request } from "express";
 import User from "../Models/User";
 import { FilterProperties } from "./types";
-import Property from "../Models/IProperty";
-import crypto from 'crypto';
-
+import Property, { IProperty } from "../Models/IProperty";
+import crypto from "crypto";
+import { GetUser } from "./UserAuth";
+import { Mongoose } from "mongoose";
 
 export async function FilterProperties(req: Request) {
   const filters = req.body as FilterProperties;
-
+  console.clear();
+  console.log("Filters received:", filters);
   if (!filters) {
     return await Property.find({});
   }
+  const page = req.body.page;
+  const limit = 20;
+  const skip = (page - 1) * limit;
 
   const mongoQuery: any = {};
 
   if (filters.title) {
-    mongoQuery.title = { $regex: filters.title, $options: 'i' };
+    mongoQuery.title = { $regex: filters.title, $options: "i" };
+  }
+  if (filters.userProperty) {
+    const user = await GetUser(req);
+    console.log(user);
+    if (user) {
+      mongoQuery.listedByUser = user._id.toString();
+      console.log("User property filter applied:", mongoQuery.listedByUser);
+    }
   }
 
   if (filters.typeProperty) {
@@ -35,22 +48,24 @@ export async function FilterProperties(req: Request) {
   }
 
   if (filters.areaSqFt && filters.areaSqFt.length === 2) {
-    mongoQuery.areaSqFt = { $gte: filters.areaSqFt[0], $lte: filters.areaSqFt[1] };
+    mongoQuery.areaSqFt = {
+      $gte: filters.areaSqFt[0],
+      $lte: filters.areaSqFt[1],
+    };
   }
 
   if (filters.bedrooms !== undefined) {
     mongoQuery.bedrooms = filters.bedrooms;
   }
 
-
   if (filters.bathrooms !== undefined) {
     mongoQuery.bathrooms = filters.bathrooms;
   }
 
   if (filters.furnished !== undefined) {
-    if (typeof filters.furnished === 'string') {
-      mongoQuery.furnished = filters.furnished.toLowerCase() === 'true';
-    } else if (typeof filters.furnished === 'boolean') {
+    if (typeof filters.furnished === "string") {
+      mongoQuery.furnished = filters.furnished.toLowerCase() === "true";
+    } else if (typeof filters.furnished === "boolean") {
       mongoQuery.furnished = filters.furnished;
     }
   }
@@ -60,8 +75,8 @@ export async function FilterProperties(req: Request) {
   }
 
   if (filters.availableFrom && filters.availableFrom.length > 0) {
-    const dates = filters.availableFrom.map(d => new Date(d));
-    const earliestDate = new Date(Math.min(...dates.map(d => d.getTime())));
+    const dates = filters.availableFrom.map((d) => new Date(d));
+    const earliestDate = new Date(Math.min(...dates.map((d) => d.getTime())));
     mongoQuery.availableFrom = { $gte: earliestDate };
   }
 
@@ -73,7 +88,6 @@ export async function FilterProperties(req: Request) {
     mongoQuery.rating = { $gte: filters.rating };
   }
 
-  
   if (filters.type) {
     mongoQuery.listingType = filters.type;
   }
@@ -85,19 +99,18 @@ export async function FilterProperties(req: Request) {
   if (filters.listingType) {
     mongoQuery.listingType = filters.listingType;
   }
-  console.log(hash_property(req.body))
-  return await Property.find(mongoQuery);
+  return await Property.find(mongoQuery).skip(skip).limit(limit);
 }
 
-function hash_property(property:FilterProperties) {
+function hash_property(property: FilterProperties) {
   const normalized = {
     listingType: property.listingType,
     areaSqFt: property.areaSqFt,
     rating: property.rating,
     isVerified: property.isVerified,
-    amenities: [...(property.amenities || [])].sort()
+    amenities: [...(property.amenities || [])].sort(),
   };
 
   const jsonString = JSON.stringify(normalized, Object.keys(normalized).sort());
-  return crypto.createHash('sha256').update(jsonString).digest('hex');
+  return crypto.createHash("sha256").update(jsonString).digest("hex");
 }
