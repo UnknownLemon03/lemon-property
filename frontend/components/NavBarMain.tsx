@@ -1,12 +1,17 @@
-import React from 'react'
+'use client';
+import React, { useEffect } from 'react'
 import { Sheet, SheetTrigger, SheetContent ,SheetTitle} from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { MenuIcon, MountainIcon } from 'lucide-react'
 import Link from 'next/link'
+import { isLogin } from '@/backend/utils';
 export default function NavBarMain() {
-  const link = [
-    {name:"Dashboard",link:"/dashboard"},
-    {name:"Login/SignUp",link:"/auth"},
+  const [login,setLogin] = React.useState(false);
+  useEffect(() => {
+    setLogin(isLogin());
+  }, []);
+  let link = [
+    (login ?  {name:"Dashboard",link:"/dashboard"} : {name:"Login/SignUp",link:"/auth"} )
   ]
   return (
     <>

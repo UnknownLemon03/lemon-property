@@ -6,8 +6,7 @@ import cookieParser from "cookie-parser";
 import { CreateUser, GetUser, isLogin } from "./util/UserAuth";
 import dotenv from "dotenv"
 import PropertyRouter from "./Routes/Propertie";
-import Property, { IProperty } from "./Models/IProperty";
-import dataDB from "./util/ignore";
+import cors from "cors"
 import User from "./Models/User";
 dotenv.config()
 const app = express();
@@ -15,6 +14,12 @@ const app = express();
 app.use(json())
 app.use(cookieParser());
 
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+  preflightContinue: false
+}));
 
 async function mainDBConnect() {
   try {
@@ -35,20 +40,18 @@ app.all("/",(req,res)=>{
 
 
 app.use((err:Error, req:Request, res:Response, next:NextFunction) => {
-  res.status(400).json({
+  res.status(500).json({
     data: null,
-    error: err.message || "Something went wrong"
+    error: err.message ?? "Something went wrong",
+    success:false
   });
 });
 
 
-app.listen(3000,async ()=>{
-    console.log("server is on 3000 ")
+app.listen(5000,async ()=>{
+    console.log("server is on 5000")
     await mainDBConnect();
-    await CreateUser({email:"admin",password:'admin'});
-    const admin = await User.findOne({
-      email:"admin"
-    })
+    // await CreateUser({email:"admin",password:'admin'});
     // console.log('admin created')
 
 

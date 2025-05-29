@@ -1,4 +1,3 @@
-import { Filter } from "@/components/Filter/SearchFilter";
 import NavBarMain from "@/components/NavBarMain";
 import PropertieCard from "@/components/PropertieCard";
 import SearchBar from "@/components/SearchBar";

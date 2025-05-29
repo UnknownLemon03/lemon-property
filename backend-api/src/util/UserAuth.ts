@@ -39,16 +39,18 @@ export async function GetUser(req:Request){
 
 
 export async function CreateUser({email,password}:{email:string,password:string}):Promise<UserType|null>{
-    try{
-        const passwordHashed = await bcrypt.hash(password,12);
-        const user = await User.create({
-            email,
-            password:passwordHashed
-        })
-        return user.save();
-    }catch(e){
-        return null
+    const passwordHashed = await bcrypt.hash(password,12);
+    const existing = await User.findOne({
+        email:email
+    })
+    if(existing){
+        throw new Error("User already existing")
     }
+    const user = await User.create({
+        email,
+        password:passwordHashed
+    })
+    return user.save();
 }
 
 // export async function isAdmin(id?:number){
