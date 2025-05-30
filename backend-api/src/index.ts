@@ -13,6 +13,9 @@ import Property from "./Models/IProperty";
 import RecommendationRoute from "./Routes/Recommendation";
 import FavoriteRoute from "./Routes/Favorate";
 import { ConnectRedis } from "./redis/redits";
+import swaggerUI from "swagger-ui-express";
+import swaggerSpec from "./util/swagger";
+
 dotenv.config();
 const app = express();
 
@@ -43,6 +46,8 @@ app.use("/property", PropertyRouter);
 app.use("/recommend", RecommendationRoute);
 app.use("/favorate", FavoriteRoute);
 
+app.use("/", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 app.all("/", (req, res) => {
   res.send("No Route Found");
 });
@@ -58,8 +63,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.listen(5000, async () => {
   console.log("server is on 5000");
-  await mainDBConnect();
-  await ConnectRedis();
+  // await mainDBConnect();
+  // await ConnectRedis();
   // console.log('admin created')
 
   // // adding new properties

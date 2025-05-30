@@ -1,0 +1,73 @@
+openapi: 3.0.4
+info:
+  title: Auth API
+  version: 1.0.0
+paths:
+  /auth/signup:
+    get:
+      summary: Sign up the user
+      description: Use to register the new user
+      parameters:
+        - name: email
+          in: query
+          description: User's email address
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: User's password
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Return the success message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: Successful sign up
+                  error:
+                    type: string
+                    example: ""
+                  success:
+                    type: boolean
+                    example: true
+  /auth/login:
+    get:
+      summary: Sign up the user
+      description: Use to Login the user
+      parameters:
+        - name: email
+          in: query
+          description: User's email address
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: User's password
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Return the success message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: Successful Login Successful
+                  error:
+                    type: string
+                    example: ""
+                  success:
+                    type: boolean
+                    example: true

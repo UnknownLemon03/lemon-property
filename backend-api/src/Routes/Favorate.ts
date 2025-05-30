@@ -58,3 +58,113 @@ FavoriteRoute.delete("/", isLoginMiddleWare, async (req, res) => {
   });
 });
 export default FavoriteRoute;
+
+/**
+ * @openapi
+ * /favorite:
+ *   post:
+ *     summary: Add or update a favorite property
+ *     description: Add a property to user's favorites or update if already exists
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: Property ID to favorite
+ *     responses:
+ *       200:
+ *         description: Success response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 data:
+ *                   nullable: true
+ *                   type: string
+ *                   example: null
+ *       400:
+ *         description: Missing property ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Property ID is required
+ *                 data:
+ *                   nullable: true
+ *                   type: string
+ *                   example: null
+ *
+ *   delete:
+ *     summary: Remove a favorite property
+ *     description: Remove a property from user's favorites
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: Property ID to remove from favorites
+ *     responses:
+ *       200:
+ *         description: Success response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 data:
+ *                   nullable: true
+ *                   type: string
+ *                   example: null
+ *       400:
+ *         description: Missing property ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: Property ID is required
+ *                 data:
+ *                   nullable: true
+ *                   type: string
+ *                   example: null
+ */

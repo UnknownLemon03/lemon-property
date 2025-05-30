@@ -137,3 +137,385 @@ PropertyRouter.delete("/", async (req, res) => {
 });
 
 export default PropertyRouter;
+
+/**
+ * @openapi
+ * /property/filter:
+ *   post:
+ *     summary: Filter properties based on criteria
+ *     description: Apply filters to search properties
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Filter criteria object (depends on your implementation)
+ *     responses:
+ *       200:
+ *         description: Filtered properties list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Property'
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ * /property/filters:
+ *   get:
+ *     summary: Get available filter options for properties
+ *     description: Fetch options such as locations, price ranges, types, etc.
+ *     responses:
+ *       200:
+ *         description: Filter options
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: Filter options object
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ * /property/{id}:
+ *   get:
+ *     summary: Get a property by ID
+ *     description: Fetch detailed information of a single property
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Property ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Property details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Property'
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ * /property:
+ *   get:
+ *     summary: Get a list of properties
+ *     description: Fetches a list of properties limited to 20
+ *     responses:
+ *       200:
+ *         description: List of properties
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Property'
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ *   post:
+ *     summary: Add a new property
+ *     description: Create a new property listing. Requires authentication.
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PropertyInput'
+ *     responses:
+ *       200:
+ *         description: Property added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 toast:
+ *                   type: string
+ *                   example: Propertie Added Successfully
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ *   put:
+ *     summary: Update an existing property
+ *     description: Update details of a property
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PropertyInput'
+ *     responses:
+ *       200:
+ *         description: Property updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 toast:
+ *                   type: string
+ *                   example: Propertie Updated Successfully
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *
+ *   delete:
+ *     summary: Delete a property
+ *     description: Delete a property by its ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: Property ID to delete
+ *     responses:
+ *       200:
+ *         description: Property deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 toast:
+ *                   type: string
+ *                   example: Property Deleted Successfully
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       500:
+ *         description: Failed to delete property
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 toast:
+ *                   type: string
+ *                   example: ""
+ *                 error:
+ *                   type: string
+ *                   example: Failed to delete property
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Property:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *         title:
+ *           type: string
+ *           example: Beautiful Apartment Downtown
+ *         description:
+ *           type: string
+ *           example: Spacious 3 bedroom apartment with modern amenities.
+ *         price:
+ *           type: number
+ *           example: 250000
+ *         location:
+ *           type: string
+ *           example: New York
+ *         typeProperty:
+ *           type: string
+ *           enum: [villa, studio, penthouse]
+ *           example: villa
+ *         state:
+ *           type: string
+ *           example: Maharashtra
+ *         city:
+ *           type: string
+ *           example: Thane
+ *         areaSqFt:
+ *           type: number
+ *           example: 2323
+ *         bedrooms:
+ *           type: integer
+ *           example: 3
+ *         bathrooms:
+ *           type: integer
+ *           example: 2
+ *         furnished:
+ *           type: string
+ *           enum: [furnished, unfurnished, semi-furnished]
+ *           example: furnished
+ *         amenities:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["gym", "swimming pool"]
+ *         availableFrom:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: date
+ *           example: ["2025-06-01"]
+ *         listedBy:
+ *           type: string
+ *           example: AgentX
+ *         rating:
+ *           type: number
+ *           example: 4
+ *         type:
+ *           type: string
+ *           enum: [buy, sell]
+ *           example: buy
+ *         isVerified:
+ *           type: boolean
+ *           example: true
+ *         listingType:
+ *           type: string
+ *           example: premium
+ *         userProperty:
+ *           type: boolean
+ *           example: true
+ *         favorite:
+ *           type: boolean
+ *           example: false
+ *         recommendation:
+ *           type: boolean
+ *           example: true
+ *         listedByUser:
+ *           type: string
+ *           example: 60d0fe4f5311236168a109ca
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: 2024-05-10T12:00:00Z
+ *
+ *     PropertyInput:
+ *       type: object
+ *       required:
+ *         - title
+ *         - description
+ *         - price
+ *         - location
+ *         - typeProperty
+ *       properties:
+ *         title:
+ *           type: string
+ *           example: Beautiful Apartment Downtown
+ *         description:
+ *           type: string
+ *           example: Spacious 3 bedroom apartment with modern amenities.
+ *         price:
+ *           type: number
+ *           example: 250000
+ *         location:
+ *           type: string
+ *           example: Thane, Maharashtra
+ *         typeProperty:
+ *           type: string
+ *           enum: [villa, studio, penthouse]
+ *           example: villa
+ *         state:
+ *           type: string
+ *           example: Maharashtra
+ *         city:
+ *           type: string
+ *           example: Thane
+ *         areaSqFt:
+ *           type: number
+ *           example: 2323
+ *         bedrooms:
+ *           type: integer
+ *           example: 3
+ *         bathrooms:
+ *           type: integer
+ *           example: 2
+ *         furnished:
+ *           type: string
+ *           enum: [furnished, unfurnished, semi-furnished]
+ *           example: furnished
+ *         amenities:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["gym", "swimming pool"]
+ *         availableFrom:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: date
+ *           example: ["2025-06-01"]
+ *         listedBy:
+ *           type: string
+ *           example: AgentX
+ *         rating:
+ *           type: number
+ *           example: 4
+ *         type:
+ *           type: string
+ *           enum: [buy, sell]
+ *           example: buy
+ *         isVerified:
+ *           type: boolean
+ *           example: true
+ *         listingType:
+ *           type: string
+ *           example: premium
+ *         userProperty:
+ *           type: boolean
+ *           example: true
+ *         favorite:
+ *           type: boolean
+ *           example: false
+ *         recommendation:
+ *           type: boolean
+ *           example: true
+ */
