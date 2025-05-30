@@ -12,6 +12,7 @@ import dataDB from "./util/ignore";
 import Property from "./Models/IProperty";
 import RecommendationRoute from "./Routes/Recommendation";
 import FavoriteRoute from "./Routes/Favorate";
+import { ConnectRedis } from "./redis/redits";
 dotenv.config();
 const app = express();
 
@@ -58,6 +59,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.listen(5000, async () => {
   console.log("server is on 5000");
   await mainDBConnect();
+  await ConnectRedis();
   // console.log('admin created')
 
   // // adding new properties

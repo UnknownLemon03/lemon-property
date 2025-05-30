@@ -151,19 +151,6 @@ export async function FilterProperties(req: Request) {
   return res;
 }
 
-function hash_property(property: FilterProperties) {
-  const normalized = {
-    listingType: property.listingType,
-    areaSqFt: property.areaSqFt,
-    rating: property.rating,
-    isVerified: property.isVerified,
-    amenities: [...(property.amenities || [])].sort(),
-  };
-
-  const jsonString = JSON.stringify(normalized, Object.keys(normalized).sort());
-  return crypto.createHash("sha256").update(jsonString).digest("hex");
-}
-
 export async function getFilterOptions() {
   const [
     propertyTypes,

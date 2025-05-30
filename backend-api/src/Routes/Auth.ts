@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../Models/User";
 import bcrypt from "bcrypt";
 import { error } from "console";
+import { getCatch, setCatch } from "../redis/redits";
 
 const AuthRouter = Router();
 
@@ -28,7 +29,6 @@ AuthRouter.post("/signup", async (req, res, next) => {
       });
       return;
     }
-    console.log(user);
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRETE!);
     res.cookie("AUTH", token, {
       sameSite: "lax",
@@ -40,7 +40,6 @@ AuthRouter.post("/signup", async (req, res, next) => {
       success: true,
     });
   } catch (e) {
-    console.log("00020202002---------------------------------");
     let error = "Error Creating Account";
     if (e instanceof Error) error = e.message;
     next(new Error(error));
@@ -77,6 +76,16 @@ AuthRouter.post("/login", async (req, res, next) => {
 
 AuthRouter.post("/", async (req, res) => {
   const email = req.body.email;
+  const catchData = await getCatch(`email_${email}`);
+  if (catchData) {
+    res.json({
+      data: JSON.parse(catchData),
+      error: "",
+      success: true,
+    });
+    return;
+  }
+  // If not cached, validate the email
   if (email == null || email.length < 3) {
     res.status(400).json({
       data: null,
@@ -91,7 +100,7 @@ AuthRouter.post("/", async (req, res) => {
   })
     .limit(5)
     .select("email");
-
+  await setCatch(`email_${email}`, JSON.stringify(data));
   res.json({
     data: data.map((e) => e.email),
     error: "",

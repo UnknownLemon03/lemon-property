@@ -4,16 +4,27 @@ import { FilterProperties } from "../util/Services";
 import Property, { IProperty } from "../Models/IProperty";
 import Recommendation from "../Models/Recommendation";
 import User from "../Models/User";
+import { getCatch, setCatch } from "../redis/redits";
 
 const RecommendationRoute = Router();
 
 RecommendationRoute.get("/", isLoginMiddleWare, async (req, res) => {
+  const catchedData = await getCatch("recommendations_" + req.user!._id);
+  if (catchedData) {
+    res.json({
+      success: true,
+      error: "",
+      data: JSON.parse(catchedData),
+    });
+    return;
+  }
   const dataDB = await Recommendation.find({
     receiverId: req.user!._id,
   }).populate("propertyId");
+
   let data = dataDB.map((e) => e.propertyId);
   console.log(data);
-
+  setCatch("recommendations_" + req.user!._id, JSON.stringify(data));
   res.json({
     success: true,
     error: "",

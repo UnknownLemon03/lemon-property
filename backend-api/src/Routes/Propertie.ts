@@ -6,19 +6,43 @@ import {
 } from "../util/Middleware";
 import { FilterProperties, getFilterOptions } from "../util/Services";
 import Property, { IProperty } from "../Models/IProperty";
+import { getCatch, hash_property, setCatch } from "../redis/redits";
 
 const PropertyRouter = Router();
 
 PropertyRouter.post("/filter", insertUserMiddleWare, async (req, res) => {
+  const hash = hash_property(req.body);
+  const cachedData = await getCatch(hash);
+  if (cachedData) {
+    res.json({
+      data: JSON.parse(cachedData),
+      error: "",
+      success: true,
+    });
+    return;
+  }
+  // If not cached, filter properties
   const data = await FilterProperties(req);
-
+  await setCatch(hash, JSON.stringify(data));
   res.json({
     data,
   });
 });
 
 PropertyRouter.get("/filters", async (req, res) => {
+  // Check if the filter options are cachedg
+  const cachedFilters = await getCatch("filterOptions");
+  if (cachedFilters) {
+    res.json({
+      data: JSON.parse(cachedFilters),
+      error: "",
+      success: true,
+    });
+    return;
+  }
+  // If not cached, fetch the filter options
   const data = await getFilterOptions();
+  await setCatch("filterOptions", JSON.stringify(data));
   res.json({
     data,
     error: "",
@@ -28,18 +52,44 @@ PropertyRouter.get("/filters", async (req, res) => {
 
 PropertyRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
+  const cachedData = await getCatch(`property_${id}`);
+  if (cachedData) {
+    res.json({
+      data: JSON.parse(cachedData),
+      error: "",
+      success: true,
+    });
+    return;
+  }
+  // If not cached, fetch the property by ID
+
   const data = await Property.findById(id);
+  await setCatch(`property_${id}`, JSON.stringify(data));
   res.json({
     data,
     error: "",
+    success: true,
   });
 });
 
 PropertyRouter.get("/", async (req, res) => {
-  const data = await Property.find({});
+  const cachedData = await getCatch("allProperties");
+  if (cachedData) {
+    res.json({
+      data: JSON.parse(cachedData),
+      error: "",
+      success: true,
+    });
+    return;
+  }
+  // If not cached, fetch all properties
+
+  const data = await Property.find({}).limit(20);
+  setCatch("allProperties", JSON.stringify(data));
   res.json({
     data,
     error: "",
+    success: true,
   });
 });
 
