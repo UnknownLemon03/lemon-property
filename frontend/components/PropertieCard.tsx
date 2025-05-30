@@ -103,9 +103,11 @@ export default function PropertyCard({
             style={{ color: data.colorTheme }}
           >
             {formatPrice(data.price)}
-            <span className="text-sm font-normal text-slate-600 ml-1">
-              /month
-            </span>
+            {data.listingType == "rent" && (
+              <span className="text-sm font-normal text-slate-600 ml-1">
+                /month
+              </span>
+            )}
           </div>
         </div>
 

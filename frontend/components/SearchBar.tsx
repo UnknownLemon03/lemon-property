@@ -28,6 +28,10 @@ export default function SearchBar({
       });
     }
   }, [search]);
+
+  function handleChange(filter: FilterProperties) {
+    setFilter(filter);
+  }
   return (
     <>
       <form className=" flex items-center w-full max-w-sm sm:max-w-sm md:max-w-md lg:max-w-xl mx-auto">
@@ -86,7 +90,7 @@ export default function SearchBar({
         <Button className="mx-2">
           <Search />
         </Button>
-        <SearchFilter />
+        <SearchFilter onFilterChange={handleChange} />
       </form>
     </>
   );
