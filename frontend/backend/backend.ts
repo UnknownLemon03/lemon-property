@@ -5,9 +5,10 @@ import { json } from "stream/consumers";
 import { FilterProperties, IProperty } from "./types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import Cookies from "js-cookie";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_URL;
+axios.defaults.validateStatus = () => true;
 axios.defaults.headers.common["Content-Type"] = "application/json";
 export interface userDetails {
   email: string;
@@ -43,14 +44,14 @@ export async function PropertyFetch(
 
 let id_timeout_filter: NodeJS.Timeout;
 export function usePropertyCreate(
-  createdByUser: boolean = false
+  intial: FilterProperties
 ): [IProperty[], Dispatch<SetStateAction<FilterProperties>>] {
   const [data, setData] = useState<IProperty[]>([]);
   const [filter, setFilter] = useState<FilterProperties>({ page: 1 });
   useEffect(() => {
     clearTimeout(id_timeout_filter);
     id_timeout_filter = setTimeout(() => {
-      PropertyFetch({ ...filter, userProperty: createdByUser })
+      PropertyFetch({ ...filter, ...intial })
         .then((res) => {
           if (res.error) {
             console.error("Error fetching properties:", res.error);
@@ -86,4 +87,43 @@ export async function UpdateProperty(
 ): Promise<ApiResponse<null>> {
   const req = await axios.put<ApiResponse<null>>("/property/", data);
   return req.data;
+}
+export async function UpdateFavorite(
+  id: string,
+  isFavorite: boolean
+): Promise<ApiResponse<null>> {
+  let req: AxiosResponse<ApiResponse<null>>;
+  if (isFavorite) {
+    req = await axios.post<ApiResponse<null>>("/favorate/", {
+      id,
+    });
+  } else {
+    req = await axios.delete<ApiResponse<null>>("/property/", {
+      data: { id },
+    });
+  }
+  await setTimeout(() => {}, 500);
+  return req.data;
+}
+
+export async function SearchEmail(
+  email: string
+): Promise<ApiResponse<string[]>> {
+  const req = await axios.post<ApiResponse<string[]>>("/Auth/", { email });
+  return req.data;
+}
+
+export async function SendRecommendation(
+  email: string,
+  property_id: string
+): Promise<ApiResponse<null>> {
+  const req = await axios.post<ApiResponse<null>>("/recommend/", {
+    email,
+    property_id,
+  });
+  return req.data;
+}
+
+export function handleLogout() {
+  Cookies.remove("AUTH");
 }

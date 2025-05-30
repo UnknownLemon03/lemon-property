@@ -10,6 +10,9 @@ import {
   Star,
   Shield,
   User,
+  Share2Icon,
+  Heart,
+  HeartIcon,
 } from "lucide-react";
 import { IProperty } from "@/backend/types";
 import { DialogDemo } from "./Dialog";
@@ -19,14 +22,10 @@ import { Button } from "./ui/button";
 
 export default function PropertyCard({
   data,
-  edit = false,
-  handleDelete,
-  doFilterRefresh,
+  children,
 }: {
-  edit?: boolean;
   data: IProperty;
-  handleDelete?: () => Promise<void>;
-  doFilterRefresh?: () => void;
+  children?: React.ReactNode;
 }) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -43,13 +42,9 @@ export default function PropertyCard({
       year: "numeric",
     });
   };
-  async function handleDeleteEvent(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    if (handleDelete) handleDelete();
-  }
 
   return (
-    <div className="relative flex flex-col my-6 mx-2 bg-white shadow-lg border border-slate-200 rounded-xl w-96 overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div className="relative flex flex-wrap flex-col my-6 mx-2 bg-white shadow-lg border border-slate-200 rounded-xl w-96 overflow-hidden transition-all duration-300 hover:shadow-xl">
       {/* Header */}
       <div className="relative p-5 bg-gradient-to-r from-gray-50 to-slate-100 border-b border-gray-200">
         {/* Badges */}
@@ -181,42 +176,9 @@ export default function PropertyCard({
           </p>
         </div>
       </div>
-
+      {/* Footer */}
       {/* Action Button */}
-      {!edit && (
-        <div className="px-5 pb-5 flex justify-around">
-          {/* <button
-            className="w-full py-3 px-4 rounded-lg text-white font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
-            style={{
-              backgroundColor: data.colorTheme,
-              boxShadow: `0 4px 14px 0 ${data.colorTheme}40`,
-            }}
-          >
-            View Details
-          </button> */}
-          <DialogDemo name="View Details">
-            <FullPropertyCard property={data} />
-          </DialogDemo>
-        </div>
-      )}
-      {edit && (
-        <div className="px-5 pb-5 flex justify-around">
-          <DialogDemo
-            variant={"secondary"}
-            className="cursor-pointer"
-            name="Edit Property"
-          >
-            <PropertyForm
-              doFilterRefresh={doFilterRefresh}
-              existingData={data}
-            />
-          </DialogDemo>
-
-          <Button variant={"destructive"} className="cursor-pointer">
-            Delete
-          </Button>
-        </div>
-      )}
+      {children}
     </div>
   );
 }

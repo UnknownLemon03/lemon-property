@@ -10,6 +10,8 @@ import cors from "cors";
 import User from "./Models/User";
 import dataDB from "./util/ignore";
 import Property from "./Models/IProperty";
+import RecommendationRoute from "./Routes/Recommendation";
+import FavoriteRoute from "./Routes/Favorate";
 dotenv.config();
 const app = express();
 
@@ -37,6 +39,8 @@ async function mainDBConnect() {
 
 app.use("/auth", AuthRouter);
 app.use("/property", PropertyRouter);
+app.use("/recommend", RecommendationRoute);
+app.use("/favorate", FavoriteRoute);
 
 app.all("/", (req, res) => {
   res.send("No Route Found");

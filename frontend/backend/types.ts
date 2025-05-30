@@ -19,6 +19,7 @@ export interface IProperty {
   isVerified: boolean;
   listingType: string;
   _id: UUID;
+  favorite?: boolean; // Optional, true if the property is favorited by the user
 }
 
 export interface FilterProperties {
@@ -39,5 +40,7 @@ export interface FilterProperties {
   isVerified?: boolean;
   listingType?: string;
   userProperty?: boolean; // true if user property
-  page?: number; // 1
+  page?: number; // 1,
+  recommendation?: boolean; // true if recommendation
+  favorite?: boolean; // true if favorite
 }

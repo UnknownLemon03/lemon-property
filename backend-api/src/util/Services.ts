@@ -4,7 +4,9 @@ import { FilterProperties } from "./types";
 import Property, { IProperty } from "../Models/IProperty";
 import crypto from "crypto";
 import { GetUser } from "./UserAuth";
-import { Mongoose } from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
+import Favorite from "../Models/Favorite";
+import Recommendation from "../Models/Recommendation";
 
 export async function FilterProperties(req: Request) {
   const filters = req.body as FilterProperties;
@@ -99,7 +101,54 @@ export async function FilterProperties(req: Request) {
   if (filters.listingType) {
     mongoQuery.listingType = filters.listingType;
   }
-  return await Property.find(mongoQuery).skip(skip).limit(limit);
+
+  let favorateHash: { [key: string]: string } = {};
+  if (req.user) {
+    const favorate = Favorite.find({
+      user: req.user._id,
+    });
+    (await favorate).forEach((e) => {
+      favorateHash[e.propertyId.toString()] = e._id.toString();
+    });
+    console.log("MongoDB Query:", favorateHash);
+  }
+  if (filters.favorite) {
+    mongoQuery._id = {
+      $in: Object.keys(favorateHash).map(
+        (id) => new mongoose.Types.ObjectId(id)
+      ),
+    };
+  }
+  if (filters.recommendation) {
+    const user = await GetUser(req);
+    if (user) {
+      const recommendations = await Recommendation.aggregate([
+        { $match: { receiverId: user._id } },
+        {
+          $lookup: {
+            from: "properties", // MongoDB collection name is lowercase plural by default
+            localField: "propertyId",
+            foreignField: "_id",
+            as: "property",
+          },
+        },
+        { $unwind: "$property" },
+      ]);
+
+      mongoQuery._id = { $in: recommendations.map((r) => r.property._id) };
+    }
+  }
+  const data = await Property.find(mongoQuery).skip(skip).limit(limit);
+  const res: any = [];
+  data.forEach((property) => {
+    const propertyData = {
+      ...property.toObject(),
+      favorite: favorateHash[property._id.toString()] || false,
+    };
+    res.push(propertyData);
+  });
+
+  return res;
 }
 
 function hash_property(property: FilterProperties) {

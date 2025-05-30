@@ -20,6 +20,8 @@ export interface FilterProperties {
   listingType?: string;
   userProperty?: boolean; // true if user property
   page?: number; // 1
+  favorite?: boolean; // true if favorite
+  recommendation?: boolean; // true if recommendation
 }
 
 declare global {

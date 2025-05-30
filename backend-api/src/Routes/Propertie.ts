@@ -1,11 +1,15 @@
 import { Request, Router } from "express";
-import { isLoginMiddleWare, isPropertyCreator } from "../util/Middleware";
+import {
+  insertUserMiddleWare,
+  isLoginMiddleWare,
+  isPropertyCreator,
+} from "../util/Middleware";
 import { FilterProperties } from "../util/Services";
 import Property, { IProperty } from "../Models/IProperty";
 
 const PropertyRouter = Router();
 
-PropertyRouter.post("/filter", async (req, res) => {
+PropertyRouter.post("/filter", insertUserMiddleWare, async (req, res) => {
   const data = await FilterProperties(req);
 
   res.json({

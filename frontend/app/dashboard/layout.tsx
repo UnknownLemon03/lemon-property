@@ -16,6 +16,7 @@ import {
 import { Home, Hotel, LogOut, MessageCircle, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { handleLogout } from "@/backend/backend";
 
 export default function RootLayout({
   children,
@@ -24,10 +25,7 @@ export default function RootLayout({
 }>) {
   const cookie = Cookies.get("AUTH");
   const router = useRouter();
-  function handleLogout() {
-    Cookies.remove("AUTH");
-    router.push("/");
-  }
+
   const items = [
     { title: "home", url: "/", icon: User },
     { title: "Manage Hotel", url: "/dashboard/hotel", icon: MessageCircle },
@@ -38,6 +36,7 @@ export default function RootLayout({
       icon: LogOut,
       onClick: () => {
         handleLogout();
+        router.push("/");
       },
     },
   ];
@@ -78,7 +77,7 @@ export default function RootLayout({
             </SidebarContent>
           </Sidebar>
         </>
-        <div className="flex flex-col ">
+        <div className="flex flex-col w-full">
           <SidebarTrigger
             style={{
               transform: "scale(1.5)",
