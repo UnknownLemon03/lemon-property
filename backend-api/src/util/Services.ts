@@ -163,3 +163,33 @@ function hash_property(property: FilterProperties) {
   const jsonString = JSON.stringify(normalized, Object.keys(normalized).sort());
   return crypto.createHash("sha256").update(jsonString).digest("hex");
 }
+
+export async function getFilterOptions() {
+  const [
+    propertyTypes,
+    states,
+    cities,
+    furnishingOptions,
+    listedByOptions,
+    listingTypes,
+    amenitiesOptions,
+  ] = await Promise.all([
+    Property.distinct("type"),
+    Property.distinct("state"),
+    Property.distinct("city"),
+    Property.distinct("furnished"),
+    Property.distinct("listedBy"),
+    Property.distinct("listingType"),
+    Property.distinct("amenities"),
+  ]);
+
+  return {
+    propertyTypes,
+    states,
+    cities,
+    furnishingOptions,
+    listedByOptions,
+    listingTypes,
+    amenitiesOptions,
+  };
+}

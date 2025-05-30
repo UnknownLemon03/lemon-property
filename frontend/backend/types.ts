@@ -44,3 +44,13 @@ export interface FilterProperties {
   recommendation?: boolean; // true if recommendation
   favorite?: boolean; // true if favorite
 }
+
+export interface FilterOptions {
+  propertyTypes: string[];
+  states: string[];
+  cities: string[];
+  furnishingOptions: string[];
+  listedByOptions: string[];
+  listingTypes: string[];
+  amenitiesOptions: string[];
+}

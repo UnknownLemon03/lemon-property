@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Filter,
   FilterX,
@@ -43,6 +43,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
+import { getFiltersOptions } from "@/backend/backend";
+import toast from "react-hot-toast";
+import { FilterOptions } from "@/backend/types";
 
 export interface FilterProperties {
   title?: string;
@@ -199,57 +202,50 @@ export function SearchFilter({
     amenities: [],
     availableFrom: [],
   });
-
-  const propertyTypes = [
-    "Villa",
-    "Studio",
-    "Penthouse",
-    "Apartment",
-    "1BHK",
-    "2BHK",
-    "3BHK",
-    "Office Space",
-  ];
-  const states = [
-    "Maharashtra",
-    "Delhi",
-    "Karnataka",
-    "Tamil Nadu",
-    "Gujarat",
-    "Rajasthan",
-  ];
-  const cities = [
-    "Mumbai",
-    "Pune",
-    "Thane",
-    "Delhi",
-    "Bangalore",
-    "Chennai",
-    "Ahmedabad",
-  ];
-  const furnishingOptions = [
-    "Fully Furnished",
-    "Semi Furnished",
-    "Unfurnished",
-  ];
-  const amenitiesOptions = [
-    "Swimming Pool",
-    "Gym",
-    "Parking",
-    "Security",
-    "Garden",
-    "Lift",
-    "Power Backup",
-    "Club House",
-  ];
-  const listedByOptions = ["Owner", "Agent", "Builder"];
-  const listingTypes = ["Premium", "Featured", "Regular"];
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    propertyTypes: [],
+    states: [],
+    cities: [],
+    furnishingOptions: [],
+    listedByOptions: [],
+    listingTypes: [],
+    amenitiesOptions: [],
+  });
 
   const updateFilter = (key: keyof FilterProperties, value: any) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
   };
+  useEffect(() => {
+    const lastFetched = localStorage.getItem("filtersLastFetched");
+    const now = Date.now();
+    const TEN_MIN = 10 * 60 * 1000;
 
+    if (!lastFetched || now - parseInt(lastFetched) > TEN_MIN) {
+      getFiltersOptions().then((e) => {
+        if (e.success) {
+          setFilterOptions(e.data);
+          localStorage.setItem("filtersLastFetched", now.toString());
+        } else {
+          toast.error("Error Fetching Filter options");
+        }
+      });
+    } else {
+      const cachedOptions = localStorage.getItem("filterOptions");
+      if (cachedOptions) {
+        setFilterOptions(JSON.parse(cachedOptions));
+      } else {
+        getFiltersOptions().then((e) => {
+          if (e.success) {
+            setFilterOptions(e.data);
+            localStorage.setItem("filterOptions", JSON.stringify(e.data));
+          } else {
+            toast.error("Error Fetching Filter options");
+          }
+        });
+      }
+    }
+  }, []);
   const applyFilters = () => {
     onFilterChange?.(filters);
     console.log("Filters applied:", filters);
@@ -295,7 +291,7 @@ export function SearchFilter({
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {propertyTypes.map((type) => (
+                    {filterOptions.propertyTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
@@ -324,7 +320,7 @@ export function SearchFilter({
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
                     <SelectContent>
-                      {states.map((state) => (
+                      {filterOptions.states.map((state) => (
                         <SelectItem key={state} value={state}>
                           {state}
                         </SelectItem>
@@ -342,7 +338,7 @@ export function SearchFilter({
                       <SelectValue placeholder="Select city" />
                     </SelectTrigger>
                     <SelectContent>
-                      {cities.map((city) => (
+                      {filterOptions.cities.map((city) => (
                         <SelectItem key={city} value={city}>
                           {city}
                         </SelectItem>
@@ -471,7 +467,7 @@ export function SearchFilter({
                     <SelectValue placeholder="Any" />
                   </SelectTrigger>
                   <SelectContent>
-                    {furnishingOptions.map((option) => (
+                    {filterOptions.furnishingOptions.map((option) => (
                       <SelectItem key={option} value={option}>
                         {option}
                       </SelectItem>
@@ -491,7 +487,7 @@ export function SearchFilter({
             <DropdownMenuSubContent>
               <div className="p-2 w-fit ">
                 <MultiSelect
-                  options={amenitiesOptions}
+                  options={filterOptions.amenitiesOptions}
                   value={filters.amenities || []}
                   onChange={(value) => updateFilter("amenities", value)}
                   placeholder="Select amenities"
@@ -516,7 +512,7 @@ export function SearchFilter({
                     <SelectValue placeholder="Any" />
                   </SelectTrigger>
                   <SelectContent>
-                    {listedByOptions.map((option) => (
+                    {filterOptions.listedByOptions.map((option) => (
                       <SelectItem key={option} value={option}>
                         {option}
                       </SelectItem>

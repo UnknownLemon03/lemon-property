@@ -4,7 +4,7 @@ import {
   isLoginMiddleWare,
   isPropertyCreator,
 } from "../util/Middleware";
-import { FilterProperties } from "../util/Services";
+import { FilterProperties, getFilterOptions } from "../util/Services";
 import Property, { IProperty } from "../Models/IProperty";
 
 const PropertyRouter = Router();
@@ -14,6 +14,15 @@ PropertyRouter.post("/filter", insertUserMiddleWare, async (req, res) => {
 
   res.json({
     data,
+  });
+});
+
+PropertyRouter.get("/filters", async (req, res) => {
+  const data = await getFilterOptions();
+  res.json({
+    data,
+    error: "",
+    success: true,
   });
 });
 

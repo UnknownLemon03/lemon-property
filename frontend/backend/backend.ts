@@ -2,7 +2,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { error } from "console";
 import { json } from "stream/consumers";
-import { FilterProperties, IProperty } from "./types";
+import { FilterOptions, FilterProperties, IProperty } from "./types";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
@@ -98,7 +98,7 @@ export async function UpdateFavorite(
       id,
     });
   } else {
-    req = await axios.delete<ApiResponse<null>>("/property/", {
+    req = await axios.delete<ApiResponse<null>>("/favorate/", {
       data: { id },
     });
   }
@@ -121,6 +121,11 @@ export async function SendRecommendation(
     email,
     property_id,
   });
+  return req.data;
+}
+
+export async function getFiltersOptions(): Promise<ApiResponse<FilterOptions>> {
+  const req = await axios.get<ApiResponse<FilterOptions>>("/property/filters");
   return req.data;
 }
 
