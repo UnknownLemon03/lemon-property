@@ -10,14 +10,22 @@ import FullPropertyCard from "@/components/FullPropertieCard";
 import Recommend from "@/components/recommend";
 import FavoriteSend from "@/components/FavoriteSend";
 import Image from "next/image";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 export default function page() {
-  const [data, setFilter] = usePropertyCreate({ recommendation: true });
+  const [data, setFilter, filter] = usePropertyCreate({ recommendation: true });
   return (
     <>
       <h3 className="text-2xl ml-[1%] md:ml-[2%] lg:ml-[5%] mb-3 font-semibold text-gray-600">
         Recommended Propertyies
       </h3>
-      <div className="h-full w-full flex-wrap  flex justify-start items-center flex-col ">
+      <div className="h-full w-full  mb-5 flex justify-start items-center flex-col ">
         {data.length == 0 && (
           <Image
             src={"/empty.svg"}
@@ -44,6 +52,39 @@ export default function page() {
               </>
             </PropertieCard>
           ))}
+
+          <Pagination>
+            <PaginationContent>
+              {filter.page != 1 && (
+                <PaginationItem
+                  onClick={() =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      page: prev.page && prev.page > 1 ? prev.page - 1 : 0,
+                    }))
+                  }
+                >
+                  <PaginationPrevious href="#" />
+                </PaginationItem>
+              )}
+              <PaginationItem>
+                <PaginationLink href="#">{filter.page ?? 1}</PaginationLink>
+              </PaginationItem>
+              {data.length != 0 && (
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={() =>
+                      setFilter((prev) => ({
+                        ...prev,
+                        page: prev.page && data.length != 0 ? prev.page + 1 : 0,
+                      }))
+                    }
+                  />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </>

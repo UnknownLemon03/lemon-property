@@ -34,7 +34,7 @@ export default function SearchBar({
   }
   return (
     <>
-      <form className=" flex items-center w-full max-w-sm sm:max-w-sm md:max-w-md lg:max-w-xl mx-auto">
+      <form className=" flex items-center  w-full max-w-sm sm:max-w-sm md:max-w-md lg:max-w-xl mx-auto">
         <label htmlFor="simple-search" className="sr-only">
           Search
         </label>

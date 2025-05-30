@@ -8,6 +8,14 @@ import PropertyForm from "@/components/NewPropertie";
 import PropertieCard from "@/components/PropertieCard";
 import SearchBar from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { fsyncSync } from "fs";
 import Image from "next/image";
 import {
@@ -22,7 +30,7 @@ import {
 import toast from "react-hot-toast";
 
 export default function page() {
-  const [data, setFilter] = usePropertyCreate({ userProperty: true });
+  const [data, setFilter, filter] = usePropertyCreate({ userProperty: true });
   function doFilterRefresh() {
     setFilter((prev) => ({ ...prev }));
   }
@@ -81,6 +89,38 @@ export default function page() {
               </div>
             </PropertieCard>
           ))}
+          <Pagination>
+            <PaginationContent>
+              {filter.page != 1 && (
+                <PaginationItem
+                  onClick={() =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      page: prev.page && prev.page > 1 ? prev.page - 1 : 0,
+                    }))
+                  }
+                >
+                  <PaginationPrevious href="#" />
+                </PaginationItem>
+              )}
+              <PaginationItem>
+                <PaginationLink href="#">{filter.page ?? 1}</PaginationLink>
+              </PaginationItem>
+              {data.length != 0 && (
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={() =>
+                      setFilter((prev) => ({
+                        ...prev,
+                        page: prev.page && data.length != 0 ? prev.page + 1 : 0,
+                      }))
+                    }
+                  />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </>

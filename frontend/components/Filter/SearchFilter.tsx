@@ -1,73 +1,3 @@
-// 'use client'
-// import {
-//   Cloud,
-//   CreditCard,
-//   Filter,
-//   FilterX,
-//   Github,
-//   Keyboard,
-//   LifeBuoy,
-//   LogOut,
-//   Mail,
-//   MessageSquare,
-//   Plus,
-//   PlusCircle,
-//   Settings,
-//   User,
-//   UserPlus,
-//   Users,
-// } from "lucide-react"
-
-// import { Button } from "@/components/ui/button"
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuGroup,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuPortal,
-//   DropdownMenuSeparator,
-//   DropdownMenuShortcut,
-//   DropdownMenuSub,
-//   DropdownMenuSubContent,
-//   DropdownMenuSubTrigger,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
-// import { FilterSelect } from "./FilterSelect"
-// import FilterRange from "./FilterRange"
-
-// export function SearchFilter() {
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger asChild>
-//         <Button variant="outline"><Filter/></Button>
-//       </DropdownMenuTrigger>
-//       <DropdownMenuContent className="w-56">
-//         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-//         <DropdownMenuSeparator/>
-//         <DropdownMenuGroup>
-//           {/* sub menu */}
-//           <DropdownMenuSub>
-//             <FilterSelect/>
-//           </DropdownMenuSub>
-//           <DropdownMenuSub>
-//             <FilterRange  />
-//           </DropdownMenuSub>
-//         </DropdownMenuGroup>
-//         <DropdownMenuSeparator />
-//         <DropdownMenuItem>
-//           <Filter />
-//           <span>Apply Filter</span>
-//         </DropdownMenuItem>
-//         <DropdownMenuItem>
-//           <FilterX />
-//           <span>Clear Filter</span>
-//         </DropdownMenuItem>
-//       </DropdownMenuContent>
-//     </DropdownMenu>
-//   )
-// }
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -112,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SelectGroup, SelectLabel } from "@radix-ui/react-select";
 
 export interface FilterProperties {
   title?: string;
@@ -137,9 +68,62 @@ export interface FilterProperties {
 }
 
 // Multi-Select Component for amenities and other multi-value fields
-function MultiSelect({
+
+// function MultiSelect({
+//   options,
+//   value = [],
+//   onChange,
+//   placeholder,
+// }: {
+//   options: string[];
+//   value: string[];
+//   onChange: (value: string[]) => void;
+//   placeholder: string;
+// }) {
+//   const handleToggle = (option: string) => {
+//     if (value.includes(option)) {
+//       onChange(value.filter((item) => item !== option));
+//     } else {
+//       onChange([...value, option]);
+//     }
+//   };
+
+//   return (
+//     <div className="space-y-2">
+//       <div className="flex flex-wrap gap-1 mb-2">
+//         {value.map((item) => (
+//           <Badge key={item} variant="secondary" className="text-xs">
+//             {item}
+//             <button
+//               onClick={() => handleToggle(item)}
+//               className="ml-1 hover:bg-gray-300 rounded-full w-3 h-3 flex items-center justify-center"
+//             >
+//               ×
+//             </button>
+//           </Badge>
+//         ))}
+//       </div>
+//       <div className="max-h-32 overflow-y-auto space-y-1">
+//         {options.map((option) => (
+//           <div key={option} className="flex items-center space-x-2">
+//             <Checkbox
+//               id={option}
+//               checked={value.includes(option)}
+//               onCheckedChange={() => handleToggle(option)}
+//             />
+//             <Label htmlFor={option} className="text-sm">
+//               {option}
+//             </Label>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+export function MultiSelect({
   options,
-  value = [],
+  value,
   onChange,
   placeholder,
 }: {
@@ -157,10 +141,40 @@ function MultiSelect({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1 mb-2">
+    <div className="space-y-2 max-w-[250px] w-full">
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>{placeholder}</SelectLabel>
+            {options.map((option) => (
+              <div
+                key={option}
+                className="flex items-center space-x-2 px-2 py-1"
+              >
+                <Checkbox
+                  id={option}
+                  checked={value.includes(option)}
+                  onCheckedChange={() => handleToggle(option)}
+                />
+                <Label htmlFor={option} className="text-sm cursor-pointer">
+                  {option}
+                </Label>
+              </div>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+      <div className="flex flex-wrap gap-1">
         {value.map((item) => (
-          <Badge key={item} variant="secondary" className="text-xs">
+          <Badge
+            key={item}
+            variant="secondary"
+            className="text-xs flex items-center gap-1"
+          >
             {item}
             <button
               onClick={() => handleToggle(item)}
@@ -171,24 +185,9 @@ function MultiSelect({
           </Badge>
         ))}
       </div>
-      <div className="max-h-32 overflow-y-auto space-y-1">
-        {options.map((option) => (
-          <div key={option} className="flex items-center space-x-2">
-            <Checkbox
-              id={option}
-              checked={value.includes(option)}
-              onCheckedChange={() => handleToggle(option)}
-            />
-            <Label htmlFor={option} className="text-sm">
-              {option}
-            </Label>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
-
 export function SearchFilter({
   onFilterChange,
 }: {
@@ -275,23 +274,12 @@ export function SearchFilter({
           Filters
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 max-h-96 overflow-y-auto">
+      <DropdownMenuContent className="max-w-80 py-1 px-2 scrollbar-hide w-fit max-h-96 overflow-y-auto">
         <DropdownMenuLabel>Property Filters</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          {/* Title Search */}
-          {/* <div className="p-2">
-            <Label className="text-sm font-medium">Search Title</Label>
-            <Input
-              placeholder="Search property title..."
-              value={filters.title || ""}
-              onChange={(e) => updateFilter("title", e.target.value)}
-              className="mt-1"
-            />
-          </div> */}
-
-          {/* Property Type */}
+          {/* Search by Title */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Home className="w-4 h-4" />
@@ -375,7 +363,7 @@ export function SearchFilter({
             <DropdownMenuSubContent>
               <div className="p-3 space-y-3">
                 <Label className="text-sm font-medium">
-                  Price: ₹{filters.priceMin?.[0].toLocaleString()} - ₹
+                  Price: ₹ {filters.priceMin?.[0].toLocaleString()} - ₹
                   {filters.priceMin?.[1].toLocaleString()}
                 </Label>
                 <Slider
@@ -501,7 +489,7 @@ export function SearchFilter({
               <span>Amenities</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <div className="p-2 w-64">
+              <div className="p-2 w-fit ">
                 <MultiSelect
                   options={amenitiesOptions}
                   value={filters.amenities || []}
@@ -616,6 +604,7 @@ export function SearchFilter({
               <Label className="text-sm">Recommendations</Label>
               <Switch
                 checked={filters.recommendation || false}
+                className="mx-l"
                 onCheckedChange={(checked) =>
                   updateFilter("recommendation", checked)
                 }

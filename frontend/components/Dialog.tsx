@@ -49,7 +49,7 @@ export function DialogDemo({
         </Button>
       </DialogTrigger>
       <DialogContent
-        className={` overflow-y-scroll overflow-x-clip scrollbar-hide  sm:max-w-fit bg-transparent border-0 shadow-none`}
+        className={`h-full overflow-y-scroll overflow-x-clip scrollbar-hide  sm:max-w-fit bg-transparent border-0 shadow-none`}
       >
         <DialogTitle></DialogTitle>
         {children}

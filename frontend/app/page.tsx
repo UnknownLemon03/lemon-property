@@ -8,13 +8,23 @@ import NavBarMain from "@/components/NavBarMain";
 import PropertieCard from "@/components/PropertieCard";
 import Recommend from "@/components/recommend";
 import SearchBar from "@/components/SearchBar";
-import { HeartIcon, Share2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HeartIcon, PlusCircle, Share2Icon } from "lucide-react";
 import Image from "next/image";
 import { use, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function Home() {
-  const [data, setFilter] = usePropertyCreate({});
+  const [data, setFilter, filter] = usePropertyCreate({});
   console.log("Data fetched:", data);
   return (
     <>
@@ -48,6 +58,49 @@ export default function Home() {
             </PropertieCard>
           ))}
         </div>
+      </div>
+      <div className="flex mb-5 justify-center items-center flex-col w-full">
+        {/* <Button
+          className="cursor-pointer"
+          onClick={() =>
+            setFilter((prev) => ({ ...prev, page: (prev.page ?? 1) + 1 }))
+          }
+        >
+          Load More
+          <PlusCircle />
+        </Button> */}
+        <Pagination>
+          <PaginationContent>
+            {filter.page != 1 && (
+              <PaginationItem
+                onClick={() =>
+                  setFilter((prev) => ({
+                    ...prev,
+                    page: prev.page && prev.page > 1 ? prev.page - 1 : 0,
+                  }))
+                }
+              >
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+            )}
+            <PaginationItem>
+              <PaginationLink href="#">{filter.page ?? 1}</PaginationLink>
+            </PaginationItem>
+            {data.length != 0 && (
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() =>
+                    setFilter((prev) => ({
+                      ...prev,
+                      page: prev.page && data.length != 0 ? prev.page + 1 : 0,
+                    }))
+                  }
+                />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
       </div>
     </>
   );

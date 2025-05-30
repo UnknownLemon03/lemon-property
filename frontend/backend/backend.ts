@@ -45,7 +45,7 @@ export async function PropertyFetch(
 let id_timeout_filter: NodeJS.Timeout;
 export function usePropertyCreate(
   intial: FilterProperties
-): [IProperty[], Dispatch<SetStateAction<FilterProperties>>] {
+): [IProperty[], Dispatch<SetStateAction<FilterProperties>>, FilterProperties] {
   const [data, setData] = useState<IProperty[]>([]);
   const [filter, setFilter] = useState<FilterProperties>({ page: 1 });
   useEffect(() => {
@@ -66,10 +66,10 @@ export function usePropertyCreate(
           toast.error("Failed to fetch properties");
         });
     }, 800);
-    // }, [JSON.stringify(filter)]);
-  }, [filter]);
-
-  return [data, setFilter];
+  }, [JSON.stringify(filter)]);
+  // }, [filter]);
+  console.log("Filter state:", filter);
+  return [data, setFilter, filter];
 }
 
 export async function DeleteProperty(id: string): Promise<ApiResponse<null>> {
