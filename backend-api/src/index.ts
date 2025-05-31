@@ -30,7 +30,10 @@ app.use(
     preflightContinue: false,
   })
 );
-
+app.use((req, res, next) => {
+  console.log(req.originalUrl, process.env.CLIENT_URL);
+  next();
+});
 async function mainDBConnect() {
   try {
     await mongoose.connect(
@@ -47,8 +50,8 @@ app.use("/auth", AuthRouter);
 app.use("/property", PropertyRouter);
 app.use("/recommend", RecommendationRoute);
 app.use("/favorate", FavoriteRoute);
-
-app.use("/", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+//lemon-property-frontend.vercel.app/
+https: app.use("/", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.all("/", (req, res) => {
   res.send("No Route Found");
