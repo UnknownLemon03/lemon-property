@@ -5,7 +5,7 @@ import {
   isPropertyCreator,
 } from "../util/Middleware";
 import { FilterProperties, getFilterOptions } from "../util/Services";
-import Property, { IProperty } from "../Models/IProperty";
+import Property, { IProperty, propertySchema } from "../Models/IProperty";
 import { getCatch, hash_property, setCatch } from "../redis/redits";
 
 const PropertyRouter = Router();
@@ -95,6 +95,14 @@ PropertyRouter.get("/", async (req, res) => {
 
 PropertyRouter.post("/", isLoginMiddleWare, async (req, res) => {
   const data = req.body as IProperty;
+  if (!propertySchema.parse(data)) {
+    res.status(400).json({
+      toast: "",
+      error: "Invalid property data",
+      success: false,
+    });
+    return;
+  } // Validate the data against the schema
   const user = req.user!;
   data.listedByUser = user._id;
   const newPropertie = await Property.create(data);

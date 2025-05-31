@@ -1,4 +1,7 @@
-import mongoose, { Schema, Document, Mongoose, Types } from "mongoose";
+import { z } from "zod";
+import { Types } from "mongoose";
+import mongoose, { Schema, Document, Mongoose } from "mongoose";
+import { infer } from "zod";
 import { UUIDTypes, v4 as uuidv4 } from "uuid";
 import { UserType } from "./User";
 export interface IProperty extends Document {
@@ -22,6 +25,33 @@ export interface IProperty extends Document {
   listedByUser: mongoose.Types.ObjectId; // Reference to User model,
   _id: UUIDTypes;
 }
+
+// Custom UUID type if you are using a UUID validation pattern
+const uuidSchema = z.string().uuid();
+
+export const propertySchema = z.object({
+  title: z.string(),
+  type: z.string(),
+  price: z.number(),
+  state: z.string(),
+  city: z.string(),
+  areaSqFt: z.number(),
+  bedrooms: z.number(),
+  bathrooms: z.number(),
+  amenities: z.array(z.string()),
+  furnished: z.string(),
+  availableFrom: z.coerce.date(),
+  listedBy: z.string(),
+  tags: z.array(z.string()),
+  colorTheme: z.string(),
+  rating: z.number(),
+  isVerified: z.boolean(),
+  listingType: z.string(),
+  listedByUser: z.instanceof(Types.ObjectId),
+  _id: uuidSchema,
+});
+
+export type PropertyType = z.infer<typeof propertySchema>;
 
 const PropertySchema: Schema = new Schema<IProperty>(
   {
