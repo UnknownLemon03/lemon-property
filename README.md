@@ -1,5 +1,3 @@
-Got it! Here's the cleaned and properly formatted version of your `README.md` content suitable for your **GitHub repository**, without the extra notes or chat-related artifacts:
-
 ---
 
 # 🏡 Property Listing System
