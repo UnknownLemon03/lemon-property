@@ -9,7 +9,7 @@ A full-stack property listing platform built for an SDE Intern Backend Assignmen
 ## 🌐 Live Demo
 
 * **Deployed App:** \ [Link](https://lemon-property-frontend.vercel.app/)
-* **Backend Api (Open API):** \ [Link](https://github.com/UnknownLemon03/lemon-property)
+* **Backend Api (Open API):** \ [Link](https://lemon-property.onrender.com/)
 
 
 ---
