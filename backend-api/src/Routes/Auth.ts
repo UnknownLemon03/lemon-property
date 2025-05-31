@@ -109,29 +109,35 @@ AuthRouter.post("/", async (req, res) => {
 });
 
 export default AuthRouter;
-
 /**
  * @openapi
  * /auth/signup:
  *   post:
  *     summary: Sign up the user
- *     description: Use to register the new user
- *     parameters:
- *       - name: email
- *         in: query
- *         description: User's email address
- *         required: true
- *         schema:
- *           type: string
- *       - name: password
- *         in: query
- *         description: User's password
- *         required: true
- *         schema:
- *           type: string
+ *     description: Use to register a new user account
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: User's password
+ *                 example: mySecurePassword123
  *     responses:
  *       200:
- *         description: return the success message
+ *         description: User successfully registered
  *         content:
  *           application/json:
  *             schema:
@@ -139,85 +145,7 @@ export default AuthRouter;
  *               properties:
  *                 data:
  *                   type: string
- *                   example: Sucessfull sign up
- *                 error:
- *                   type: string
- *                   example: ""
- *                 success:
- *                   type: boolean
- *                   example: true
- */
-
-/**
- * @openapi
- * /auth/login:
- *   post:
- *     summary: Login in the user
- *     description: Use to login the existing user
- *     parameters:
- *       - name: email
- *         in: query
- *         description: User's email address
- *         required: true
- *         schema:
- *           type: string
- *       - name: password
- *         in: query
- *         description: User's password
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: return the success message
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: string
- *                   example: Sucessfull Login in
- *                 error:
- *                   type: string
- *                   example: ""
- *                 success:
- *                   type: boolean
- *                   example: true
- */
-
-/**
- * @openapi
- * /auth/:
- *   post:
- *     summary: use for searching email
- *     description: help search email of users
- *     parameters:
- *       - name: email
- *         in: query
- *         description: User's email address
- *         required: true
- *         schema:
- *           type: string
- *       - name: AUTH
- *         in: cookie
- *         description: it's user's authentication token that user get after login
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: return the list of email addresses
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: admin@admin.com
+ *                   example: "Successful sign up"
  *                 error:
  *                   type: string
  *                   example: ""
@@ -225,7 +153,7 @@ export default AuthRouter;
  *                   type: boolean
  *                   example: true
  *       400:
- *         description: Invalid email input
+ *         description: Invalid input data
  *         content:
  *           application/json:
  *             schema:
@@ -236,7 +164,177 @@ export default AuthRouter;
  *                   example: null
  *                 error:
  *                   type: string
- *                   example: Email is required, minimum 3 characters
+ *                   example: "Email is required or password too short"
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *       409:
+ *         description: User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: "null"
+ *                   example: null
+ *                 error:
+ *                   type: string
+ *                   example: "User with this email already exists"
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     summary: Log in the user
+ *     description: Authenticate an existing user and create a session
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *                 example: mySecurePassword123
+ *     responses:
+ *       200:
+ *         description: User successfully logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: string
+ *                   example: "Successful login"
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Invalid input data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: "null"
+ *                   example: null
+ *                 error:
+ *                   type: string
+ *                   example: "Email and password are required"
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: "null"
+ *                   example: null
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid email or password"
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ */
+
+/**
+ * @openapi
+ * /auth/:
+ *   post:
+ *     summary: Search for user emails
+ *     description: Search and retrieve user email addresses based on search criteria
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 minLength: 3
+ *                 description: Email search query (partial or full email)
+ *                 example: "admin"
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved matching email addresses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     format: email
+ *                   example: ["admin@admin.com", "admin@company.com"]
+ *                 error:
+ *                   type: string
+ *                   example: ""
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Invalid email search input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: "null"
+ *                   example: null
+ *                 error:
+ *                   type: string
+ *                   example: "Email is required, minimum 3 characters"
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *       404:
+ *         description: No matching emails found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 error:
+ *                   type: string
+ *                   example: "No matching emails found"
  *                 success:
  *                   type: boolean
  *                   example: false

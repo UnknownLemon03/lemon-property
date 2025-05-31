@@ -283,6 +283,8 @@ export default PropertyRouter;
  *   put:
  *     summary: Update an existing property
  *     description: Update details of a property
+ *     security:
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -310,6 +312,8 @@ export default PropertyRouter;
  *   delete:
  *     summary: Delete a property
  *     description: Delete a property by its ID
+ *     security:
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:

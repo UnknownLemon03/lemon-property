@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
     preflightContinue: false,
@@ -33,7 +33,9 @@ app.use(
 
 async function mainDBConnect() {
   try {
-    await mongoose.connect("mongodb://localhost:27017");
+    await mongoose.connect(
+      process.env.DB_URL || "mongodb://localhost:27017/real-estate"
+    );
     console.log("Database connected");
   } catch (error) {
     console.error("Database is not connected\n", error);
@@ -61,10 +63,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-app.listen(5000, async () => {
+app.listen(process.env.SERVER_PORT, async () => {
   console.log("server is on 5000");
-  // await mainDBConnect();
-  // await ConnectRedis();
+  await mainDBConnect();
+  await ConnectRedis();
   // console.log('admin created')
 
   // // adding new properties

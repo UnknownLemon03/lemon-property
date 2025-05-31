@@ -8,14 +8,24 @@ const swaggerDefinition = {
     version: "1.0.0",
     description: "My API Description",
   },
+  components: {
+    securitySchemes: {
+      cookieAuth: {
+        type: "apiKey",
+        in: "cookie",
+        name: "AUTH",
+      },
+    },
+  },
+  security: [
+    {
+      cookieAuth: [],
+    },
+  ],
 };
-
 const options = {
   swaggerDefinition,
-  apis: [
-    path.resolve(__dirname, "../Routes/*.{ts,js}"),
-    // path.resolve(__dirname, "../../src/util/routes.yml"),
-  ],
+  apis: [path.resolve(__dirname, "../Routes/*.{ts,js}")],
 };
 console.log();
 const swaggerSpec = swaggerJSDoc(options);
