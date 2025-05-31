@@ -31,7 +31,7 @@ app.use(
   })
 );
 app.use((req, res, next) => {
-  console.log(req.originalUrl, process.env.CLIENT_URL);
+  console.log(req.headers.origin, process.env.CLIENT_URL);
   next();
 });
 async function mainDBConnect() {
