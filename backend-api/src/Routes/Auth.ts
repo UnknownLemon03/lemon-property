@@ -31,7 +31,8 @@ AuthRouter.post("/signup", async (req, res, next) => {
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRETE!);
     res.cookie("AUTH", token, {
-      sameSite: "lax",
+      sameSite: "none",
+      secure: true,   
       maxAge: 12 * 60 * 60 * 1000,
     });
     res.status(200).json({
